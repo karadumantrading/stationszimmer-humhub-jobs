@@ -1,0 +1,10 @@
+{
+    "id": "forum",
+    "version": "0.1.0",
+    "name": "Forum",
+    "description": "Kategorie-basiertes Pflege-Forum (Kategorien → Themen → Antworten) für Stationszimmer.",
+    "keywords": ["forum", "community", "pflege", "stationszimmer"],
+    "humhub": {
+        "minVersion": "1.15"
+    }
+}

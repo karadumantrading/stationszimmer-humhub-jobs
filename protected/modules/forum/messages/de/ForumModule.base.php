@@ -1,0 +1,51 @@
+<?php
+/**
+ * Deutsch (CH) – Sprachdatei des Forum-Moduls. «ss» statt «ß».
+ */
+return [
+    'Forum' => 'Forum',
+    'Kürzel (slug)' => 'Kürzel (slug)',
+    'Titel' => 'Titel',
+    'Beschreibung' => 'Beschreibung',
+    'Icon (FontAwesome)' => 'Icon (FontAwesome)',
+    'Sortierung' => 'Sortierung',
+    'Beitrag' => 'Beitrag',
+
+    'Bereich nicht gefunden.' => 'Bereich nicht gefunden.',
+    'Thema nicht gefunden.' => 'Thema nicht gefunden.',
+    'Beitrag nicht gefunden.' => 'Beitrag nicht gefunden.',
+    'Dieses Thema ist geschlossen.' => 'Dieses Thema ist geschlossen.',
+    'Keine Berechtigung.' => 'Keine Berechtigung.',
+    'Thema gelöscht.' => 'Thema gelöscht.',
+    'Bereich gelöscht.' => 'Bereich gelöscht.',
+
+    'Themen' => 'Themen',
+    'Neues Thema' => 'Neues Thema',
+    'Noch keine Themen – starte das erste!' => 'Noch keine Themen – starte das erste!',
+    'Antworten' => 'Antworten',
+    'Angepinnt' => 'Angepinnt',
+    'Geschlossen' => 'Geschlossen',
+    'Letzte Aktivität' => 'Letzte Aktivität',
+    'Lösen' => 'Lösen',
+    'Anpinnen' => 'Anpinnen',
+    'Öffnen' => 'Öffnen',
+    'Schliessen' => 'Schliessen',
+    'Thema wirklich löschen?' => 'Thema wirklich löschen?',
+    'Antwort schreiben …' => 'Antwort schreiben …',
+    'Melde dich an, um mitzudiskutieren.' => 'Melde dich an, um mitzudiskutieren.',
+    'Unbekannt' => 'Unbekannt',
+    'Bearbeiten' => 'Bearbeiten',
+    'Löschen' => 'Löschen',
+    'Beitrag löschen?' => 'Beitrag löschen?',
+    'Worum geht es?' => 'Worum geht es?',
+    'Schreibe deinen Beitrag …' => 'Schreibe deinen Beitrag …',
+    'Thema erstellen' => 'Thema erstellen',
+    'Abbrechen' => 'Abbrechen',
+    'Beitrag bearbeiten' => 'Beitrag bearbeiten',
+    'Speichern' => 'Speichern',
+
+    'Forum – Bereiche' => 'Forum – Bereiche',
+    'Neuer Bereich' => 'Neuer Bereich',
+    'Bereich bearbeiten' => 'Bereich bearbeiten',
+    'Bereich inkl. aller Themen löschen?' => 'Bereich inkl. aller Themen löschen?',
+];

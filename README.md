@@ -1,8 +1,22 @@
-# Stationszimmer – HumHub-Modul «Jobbörse» (`jobs`)
+# Stationszimmer – HumHub-Module
 
-Bezahlte Stelleninserate für Pflege-Arbeitgeber (Heime, Spitäler, Spitex) als
-eigenständiges HumHub-Custom-Modul (Yii2 / PHP 8.x / MariaDB). Stripe Checkout
-(gehostet), automatischer Ablauf, DE-CH + FR.
+HumHub-Custom-Module (Yii2 / PHP 8.x / MariaDB) für die Pflege-Community
+Stationszimmer. Zwei Module in diesem Repo:
+
+- **`forum`** — kategorie-basiertes Forum (8 Bereiche → Themen → Antworten),
+  inkl. Moderation (anpinnen/sperren/löschen), Admin-Bereichsverwaltung, DE+FR.
+  *Frisch starten* (keine Migration); Eigenbau statt schwacher Drittmodule
+  (siehe `docs/ENTSCHEIDE_und_Forenmodell.md`).
+- **`jobs`** — bezahlte Stelleninserate (Stripe Checkout, Tarife, Auto-Ablauf).
+
+Sprache: DE-CH (ss statt ß) + FR-Gerüst.
+
+---
+
+## Modul «Jobbörse» (`jobs`)
+
+Bezahlte Stelleninserate für Pflege-Arbeitgeber (Heime, Spitäler, Spitex).
+Stripe Checkout (gehostet), automatischer Ablauf, DE-CH + FR.
 
 > **Status / Hinweis:** Dieser Code wurde ausserhalb einer laufenden HumHub-Instanz
 > verfasst (auf der Build-Maschine sind kein PHP/Composer/MySQL/HumHub vorhanden).
