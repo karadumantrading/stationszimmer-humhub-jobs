@@ -1,0 +1,20 @@
+<?php
+/**
+ * Vorlage für protected/config/local.php in der HumHub-Installation.
+ *
+ * Verknüpft die Stripe-Secrets aus der Umgebung (docker-compose) mit
+ * Yii::$app->params, wo das Modul sie liest. Die ECHTE Datei liegt im
+ * humhub_config-Volume unter protected/config/local.php – NICHT committen.
+ *
+ * Einsetzen (Container läuft):
+ *   docker compose exec humhub sh -c "cat >> /var/www/localhost/htdocs/protected/config/local.php" < dev/local.php.sample
+ * oder den params-Block in die bestehende local.php einfügen.
+ */
+return [
+    'params' => [
+        'stripe' => [
+            'secretKey'     => getenv('STRIPE_SECRET_KEY')     ?: '',
+            'webhookSecret' => getenv('STRIPE_WEBHOOK_SECRET') ?: '',
+        ],
+    ],
+];

@@ -1,0 +1,60 @@
+# Dev-Umgebung (HumHub + MariaDB via Docker)
+
+Lokale Umgebung, um das Modul `jobs` zu entwickeln und zu testen. Auf dieser
+Maschine ist Docker (noch) **nicht installiert** – Schritt 0 deckt das ab.
+
+## 0. Voraussetzungen (einmalig)
+
+- **Docker Desktop für Windows** installieren: https://www.docker.com/products/docker-desktop/
+  (WSL2-Backend empfohlen; benötigt einen Neustart und ggf. Admin-Rechte).
+- Danach `docker --version` und `docker compose version` müssen funktionieren.
+
+## 1. Starten
+
+```powershell
+cd C:\Projekte\stationszimmer-humhub-jobs\dev
+Copy-Item .env.example .env      # Werte bei Bedarf anpassen
+docker compose up -d
+```
+
+Dann **http://localhost:8080** öffnen und den HumHub-Installer durchlaufen
+(DB-Host `db`, DB-Name/User/Passwort wie in `.env`). Falls die DB-Felder schon
+vorbelegt sind, übernehmen.
+
+## 2. Modul aktivieren
+
+Das Modul ist bereits in den Container gemountet (`protected/modules/jobs`).
+Administration → Module → «Jobbörse» aktivieren (Migration läuft dabei).
+
+## 3. Stripe-SDK + Secrets
+
+```powershell
+# SDK im HumHub-Root installieren
+docker compose exec humhub composer require stripe/stripe-php
+
+# Stripe-Params hinterlegen (Secrets via dev/.env -> Container-Env -> params)
+# Inhalt von dev/local.php.sample in protected/config/local.php einfügen.
+```
+
+Webhook (z. B. via Stripe CLI in den Container forwarden):
+`stripe listen --forward-to http://localhost:8080/index.php?r=jobs/webhook`
+
+## 4. Entwickeln
+
+- Modul-Dateien liegen lokal unter `../protected/modules/jobs` und sind **live**
+  im Container. Nach Code-Änderungen ggf. den HumHub-Cache leeren:
+  `docker compose exec humhub php protected/yii cache/flush-all`
+- Cron manuell antreiben: `docker compose exec humhub php protected/yii cron/daily`
+  oder direkt `… php protected/yii jobs/expire`.
+
+## 5. Stoppen / Zurücksetzen
+
+```powershell
+docker compose down            # Container stoppen (Daten bleiben in Volumes)
+docker compose down -v         # ALLES inkl. DB/Uploads löschen (Frischstart)
+```
+
+> **@verify:** Image-Tag, Webroot-Pfad und Env-Variablennamen hängen vom
+> gewählten HumHub-Image ab (hier `mriedmann/humhub`). Bei Abweichungen die
+> Mount-Pfade in `docker-compose.yml` und die Installer-Schritte anpassen.
+> Offizielle HumHub-Doku: https://docs.humhub.org/

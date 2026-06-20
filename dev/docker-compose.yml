@@ -1,0 +1,50 @@
+# Lokale HumHub-Dev-Umgebung für die Modulentwicklung.
+# Startet HumHub + MariaDB und mountet das Modul live in die Installation.
+#
+# @verify: Image-Tag/Version (~1.16) und den Modul-Pfad im Container gegen die
+# Doku des verwendeten Images prüfen. Bei mriedmann/humhub ist der Webroot
+# /var/www/localhost/htdocs; andere Images nutzen /var/www/html.
+#
+# Nutzung:  cd dev && copy .env.example .env  (Werte anpassen)  &&  docker compose up -d
+# Öffnen:   http://localhost:8080   (HumHub-Installer durchlaufen)
+
+services:
+  db:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+  humhub:
+    # @verify: passenden, gepinnten Tag wählen (z. B. mriedmann/humhub:1.16).
+    image: mriedmann/humhub:1.16
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+    environment:
+      # @verify: Env-Namen gegen die Image-Doku. Sonst DB im Web-Installer eintragen.
+      HUMHUB_DB_HOST: db
+      HUMHUB_DB_NAME: ${DB_NAME}
+      HUMHUB_DB_USER: ${DB_USER}
+      HUMHUB_DB_PASSWORD: ${DB_PASSWORD}
+      # Stripe-Secrets (vom Modul via Yii::$app->params gelesen – siehe local.php.sample)
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+    volumes:
+      # Live-Mount des Moduls -> Änderungen sofort wirksam (Cache ggf. leeren).
+      - ../protected/modules/jobs:/var/www/localhost/htdocs/protected/modules/jobs
+      # Persistente HumHub-Daten
+      - humhub_config:/var/www/localhost/htdocs/protected/config
+      - humhub_uploads:/var/www/localhost/htdocs/uploads
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  humhub_config:
+  humhub_uploads:

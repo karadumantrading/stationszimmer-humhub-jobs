@@ -1,0 +1,18 @@
+/* Jobbörse – leichte Hervorhebung. Der eigentliche «Fieberkurve»-Look kommt
+   vom Theme; die geplottete Aktivitätskurve pro Inserat ist v2. */
+.jobs-card {
+    transition: box-shadow .15s ease, border-color .15s ease;
+}
+.jobs-card:hover {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
+}
+.jobs-card-top {
+    border-color: #d4a54b;
+    box-shadow: 0 0 0 1px rgba(212, 165, 75, .35);
+}
+.jobs-filter > * {
+    margin: 0 6px 6px 0;
+}
+.jobs-description {
+    line-height: 1.6;
+}

@@ -1,0 +1,10 @@
+{
+    "id": "jobs",
+    "version": "0.1.0",
+    "name": "Jobbörse",
+    "description": "Bezahlte Stelleninserate für Pflege-Arbeitgeber (Heime, Spitäler, Spitex) mit Stripe-Bezahlung und automatischem Ablauf.",
+    "keywords": ["jobs", "stellen", "jobboerse", "pflege", "stationszimmer"],
+    "humhub": {
+        "minVersion": "1.15"
+    }
+}

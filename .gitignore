@@ -1,0 +1,21 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Secrets / lokale Konfiguration – NIEMALS committen
+*.env
+.env
+.env.local
+dev/.env
+protected/config/local.php
+
+# Docker-Volumes / lokale Laufzeitdaten (falls hier abgelegt)
+dev/data/
+dev/_humhub_uploads/
+
+# Composer (Stripe-SDK wird im HumHub-Root installiert, nicht hier)
+vendor/
+composer.lock
