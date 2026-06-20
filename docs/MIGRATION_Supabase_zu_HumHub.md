@@ -1,5 +1,10 @@
 # Migrationskonzept: Stationszimmer (React/Supabase) → HumHub
 
+> **STATUS 20.06.2026: ENTFÄLLT WEITGEHEND.** Entscheid Ilhan = **frisch starten**
+> (keine Migration von Nutzern/Threads/Posts). Dieses Dokument bleibt als
+> **Referenz** erhalten – relevant nur, falls später doch einzelne Daten (z. B.
+> Jobinserate aus React) übernommen werden sollen. Siehe `ENTSCHEIDE_und_Forenmodell.md`.
+
 Durchdenken der Inhalts-Migration für den Pivot. **Noch kein Code, nur Konzept**
 mit den ehrlichen harten Punkten.
 
