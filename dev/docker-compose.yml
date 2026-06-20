@@ -37,8 +37,11 @@ services:
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
     volumes:
-      # Live-Mount des Moduls -> Änderungen sofort wirksam (Cache ggf. leeren).
+      # Live-Mount BEIDER Module -> Änderungen sofort wirksam (Cache ggf. leeren).
+      # Einzeln mounten (NICHT das ganze modules/-Verzeichnis – das würde die
+      # mitgelieferten HumHub-Module überdecken).
       - ../protected/modules/jobs:/var/www/localhost/htdocs/protected/modules/jobs
+      - ../protected/modules/forum:/var/www/localhost/htdocs/protected/modules/forum
       # Persistente HumHub-Daten
       - humhub_config:/var/www/localhost/htdocs/protected/config
       - humhub_uploads:/var/www/localhost/htdocs/uploads

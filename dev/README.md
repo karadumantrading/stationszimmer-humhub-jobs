@@ -21,10 +21,11 @@ Dann **http://localhost:8080** öffnen und den HumHub-Installer durchlaufen
 (DB-Host `db`, DB-Name/User/Passwort wie in `.env`). Falls die DB-Felder schon
 vorbelegt sind, übernehmen.
 
-## 2. Modul aktivieren
+## 2. Module aktivieren
 
-Das Modul ist bereits in den Container gemountet (`protected/modules/jobs`).
-Administration → Module → «Jobbörse» aktivieren (Migration läuft dabei).
+Beide Module sind in den Container gemountet (`protected/modules/jobs` und
+`…/forum`). Administration → Module → **«Forum»** und **«Jobbörse»** aktivieren
+(Migrationen laufen dabei; das Forum seedet die 8 Bereiche).
 
 ## 3. Stripe-SDK + Secrets
 

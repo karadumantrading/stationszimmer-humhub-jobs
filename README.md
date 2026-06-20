@@ -1,5 +1,11 @@
 # Stationszimmer – HumHub-Module
 
+![HumHub](https://img.shields.io/badge/HumHub-%E2%89%A5%201.16-1b9e77)
+![PHP](https://img.shields.io/badge/PHP-8.x-777bb4)
+![Module](https://img.shields.io/badge/Module-forum%20%C2%B7%20jobs-2b6a7a)
+![Status](https://img.shields.io/badge/Status-WIP%20%C2%B7%20ungetestet-orange)
+![i18n](https://img.shields.io/badge/i18n-DE%20%C2%B7%20FR--Ger%C3%BCst-d4a54b)
+
 HumHub-Custom-Module (Yii2 / PHP 8.x / MariaDB) für die Pflege-Community
 Stationszimmer. Zwei Module in diesem Repo:
 
