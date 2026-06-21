@@ -9,6 +9,17 @@ und `docs.humhub.org` prüfen. Priorität: **🔴 bricht sonst** · **🟡 wicht
 > Migrationen müssen durchlaufen → Menüpunkte erscheinen → je eine Seite je
 > Controller öffnen. Fehler weisen meist genau auf einen Punkt unten.
 
+## Stand 21.06.2026 (gegen humhub/develop verifiziert)
+- ✅ **Menü-API bestätigt**: `humhub\widgets\TopMenu::EVENT_INIT`,
+  `humhub\modules\ui\menu\MenuLink`, `humhub\modules\ui\widgets\Icon` + Setter
+  (setId/Label/Url/Icon/SortOrder/IsActive) + `addEntry` — `Events.php` (jobs+forum) passt 1:1.
+- ✅ **ControllerAccess bestätigt**: `RULE_LOGGED_IN_ONLY = 'login'` existiert; es
+  gibt **keine** `RULE_GUEST_*`-Konstante (Gastzugriff via GuestAccessValidator).
+- 🔧 **Webhook gefixt**: nutzt jetzt plain `yii\web\Controller` (kein Access-Layer)
+  statt der nicht existierenden `RULE_GUEST_ACCESS_ONLY`.
+- ⏳ **Offen für Docker-Live-Test**: Cron-Klasse, Admin-Controller-Basis,
+  `@modul`-View-Alias, Migrationslauf (siehe 🔴 unten).
+
 ---
 
 ## 🔴 Bricht das Modul, wenn falsch

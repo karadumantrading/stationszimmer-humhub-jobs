@@ -3,29 +3,22 @@
 namespace humhub\modules\jobs\controllers;
 
 use Yii;
-use humhub\components\Controller;
-use humhub\components\access\ControllerAccess;
 use humhub\modules\jobs\Module;
 use humhub\modules\jobs\models\JobListing;
 
 /**
- * Stripe-Webhook. Erreichbar OHNE Login und OHNE CSRF, aber es wird
- * AUSSCHLIESSLICH signaturgeprüften Events vertraut (\Stripe\Webhook::constructEvent).
+ * Stripe-Webhook. Öffentlicher Endpunkt: kein Login, kein CSRF.
  *
- * @verify: Guest-Zugriff/Access-Layer gegen installierte HumHub-Version.
+ * Bewusst `yii\web\Controller` (NICHT humhub\components\Controller): so greift
+ * der HumHub-Guest-/Login-Access-Layer nicht und Stripe erreicht den Endpunkt
+ * unabhängig von der «Gastzugriff»-Einstellung. Die Authentizität sichert
+ * AUSSCHLIESSLICH die Stripe-Signatur (\Stripe\Webhook::constructEvent).
+ *
+ * @verify: dass ein plain Yii-Controller im Modul für Gäste routet (Docker-Test).
  */
-class WebhookController extends Controller
+class WebhookController extends \yii\web\Controller
 {
     public $enableCsrfValidation = false;
-    public $access = ControllerAccess::class;
-
-    protected function getAccessRules(): array
-    {
-        // Gast erlaubt – die Authentizität sichert die Stripe-Signatur, nicht das Login.
-        return [
-            [ControllerAccess::RULE_GUEST_ACCESS_ONLY => ['index']],
-        ];
-    }
 
     /** @return Module */
     private function module(): Module
