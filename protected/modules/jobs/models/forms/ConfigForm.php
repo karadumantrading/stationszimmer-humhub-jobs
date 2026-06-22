@@ -9,15 +9,15 @@ use humhub\modules\jobs\Module;
 /**
  * Modul-Konfiguration (Admin). Speichert in die HumHub-Modul-Settings.
  *
- * WICHTIG: Hier liegen NUR Price-IDs/Stichdatum/Flags – NIEMALS der Stripe
- * Secret Key oder das Webhook-Secret (die gehören in Yii::$app->params/Env).
+ * WICHTIG: Hier liegen NUR Price-IDs/Limit/Flags – NIEMALS der Stripe Secret Key
+ * oder das Webhook-Secret (die gehören in Yii::$app->params/Env).
  */
 class ConfigForm extends Model
 {
     public $stripePriceIntro;
     public $stripePriceBasis;
     public $stripePriceTop;
-    public $introValidUntil;
+    public $introListingLimit;
     public $moderationEnabled;
     public $durationDays;
 
@@ -28,7 +28,7 @@ class ConfigForm extends Model
             [['stripePriceIntro', 'stripePriceBasis', 'stripePriceTop'], 'match',
                 'pattern' => '/^price_[A-Za-z0-9]+$/', 'skipOnEmpty' => true,
                 'message' => Yii::t('JobsModule.base', 'Bitte eine gültige Stripe-Price-ID (price_…) eingeben.')],
-            [['introValidUntil'], 'date', 'format' => 'php:Y-m-d', 'skipOnEmpty' => true],
+            [['introListingLimit'], 'integer', 'min' => 0, 'max' => 100000],
             [['moderationEnabled'], 'boolean'],
             [['durationDays'], 'integer', 'min' => 1, 'max' => 365],
         ];
@@ -38,9 +38,9 @@ class ConfigForm extends Model
     {
         return [
             'stripePriceIntro' => Yii::t('JobsModule.base', 'Stripe-Price-ID «Intro» (CHF 49)'),
-            'stripePriceBasis' => Yii::t('JobsModule.base', 'Stripe-Price-ID «Basis»'),
-            'stripePriceTop' => Yii::t('JobsModule.base', 'Stripe-Price-ID «Top»'),
-            'introValidUntil' => Yii::t('JobsModule.base', 'Intro-Stichdatum (letzter Tag)'),
+            'stripePriceBasis' => Yii::t('JobsModule.base', 'Stripe-Price-ID «Basis» (CHF 99)'),
+            'stripePriceTop' => Yii::t('JobsModule.base', 'Stripe-Price-ID «Top» (CHF 199)'),
+            'introListingLimit' => Yii::t('JobsModule.base', 'Intro-Limit (Anzahl bezahlter Inserate)'),
             'moderationEnabled' => Yii::t('JobsModule.base', 'Inserate vor Veröffentlichung prüfen'),
             'durationDays' => Yii::t('JobsModule.base', 'Laufzeit pro Inserat (Tage)'),
         ];
@@ -52,9 +52,7 @@ class ConfigForm extends Model
         $this->stripePriceIntro = $s->get('stripePriceIntro', '');
         $this->stripePriceBasis = $s->get('stripePriceBasis', '');
         $this->stripePriceTop = $s->get('stripePriceTop', '');
-        $this->introValidUntil = $module->getIntroValidUntil()
-            ? substr((string) $module->getIntroValidUntil(), 0, 10)
-            : '';
+        $this->introListingLimit = $module->getIntroListingLimit();
         $this->moderationEnabled = $module->isModerationEnabled();
         $this->durationDays = $module->getDurationDays();
     }
@@ -68,8 +66,7 @@ class ConfigForm extends Model
         $s->set('stripePriceIntro', trim((string) $this->stripePriceIntro));
         $s->set('stripePriceBasis', trim((string) $this->stripePriceBasis));
         $s->set('stripePriceTop', trim((string) $this->stripePriceTop));
-        // Stichdatum inkl. Tagesende speichern.
-        $s->set('introValidUntil', $this->introValidUntil ? $this->introValidUntil . ' 23:59:59' : '');
+        $s->set('introListingLimit', (int) $this->introListingLimit);
         $s->set('moderationEnabled', $this->moderationEnabled ? '1' : '0');
         $s->set('durationDays', (int) $this->durationDays);
         return true;

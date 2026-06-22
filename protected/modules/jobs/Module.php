@@ -4,13 +4,14 @@ namespace humhub\modules\jobs;
 
 use Yii;
 use yii\helpers\Url;
+use humhub\modules\jobs\models\JobListing;
 
 /**
  * Modul «Jobbörse».
  *
  * Hält die serverseitige Tarif-Hoheit: Tier-Definitionen (Preis-IDs, Dauer,
- * Intro-Stichdatum, Moderation) kommen ausschliesslich aus den Modul-Settings,
- * NIE aus dem Client. Stripe-Secrets liegen NICHT hier, sondern in Yii::$app->params.
+ * Intro-Limit, Moderation) kommen ausschliesslich aus den Modul-Settings, NIE
+ * aus dem Client. Stripe-Secrets liegen NICHT hier, sondern in Yii::$app->params.
  *
  * @verify: humhub\components\Module gegen installierte Version.
  */
@@ -29,6 +30,9 @@ class Module extends \humhub\components\Module
         self::TIER_LEHRSTELLE,
     ];
 
+    /** Standard-Limit für die Intro-Aktion (Anzahl bezahlter Inserate). */
+    public const DEFAULT_INTRO_LIMIT = 50;
+
     /** Konfigurationsseite im Admin. */
     public function getConfigUrl()
     {
@@ -41,22 +45,40 @@ class Module extends \humhub\components\Module
         return (int) ($this->settings->get('durationDays', 30)) ?: 30;
     }
 
-    /** Ist Moderation (Freigabe vor Veröffentlichung) aktiv? */
+    /** Ist Moderation (Freigabe vor Veröffentlichung) aktiv? (Gründungsphase: AN) */
     public function isModerationEnabled(): bool
     {
-        return (bool) $this->settings->get('moderationEnabled', false);
+        return (bool) $this->settings->get('moderationEnabled', true);
     }
 
-    /** Intro-Stichdatum (Y-m-d H:i:s) oder null. */
-    public function getIntroValidUntil(): ?string
+    /** Bis zu wie vielen bezahlten Inseraten gilt der Intro-Tarif? */
+    public function getIntroListingLimit(): int
     {
-        $v = trim((string) $this->settings->get('introValidUntil', ''));
-        return $v !== '' ? $v : null;
+        $v = $this->settings->get('introListingLimit', self::DEFAULT_INTRO_LIMIT);
+        return ($v === null || $v === '') ? self::DEFAULT_INTRO_LIMIT : (int) $v;
+    }
+
+    /**
+     * Anzahl bereits bezahlter Inserate (Tier ≠ Lehrstelle, Zahlung abgeschlossen).
+     * Wird direkt aus der Tabelle abgeleitet – kein Datum, keine Extra-Spalte.
+     */
+    public function getPaidListingCount(): int
+    {
+        return (int) JobListing::find()
+            ->andWhere(['not', ['tier' => self::TIER_LEHRSTELLE]])
+            ->andWhere(['not', ['paid_at' => null]])
+            ->count();
+    }
+
+    /** Ist die Intro-Aktion noch verfügbar (Kontingent nicht ausgeschöpft)? */
+    public function isIntroAvailable(): bool
+    {
+        return $this->getPaidListingCount() < $this->getIntroListingLimit();
     }
 
     /**
      * Vollständige Tier-Definitionen (label, durationDays, stripePriceId, isTop,
-     * free, validUntil). Reine Konfiguration – keine Verfügbarkeitslogik.
+     * free). Reine Konfiguration – Verfügbarkeit/Erlaubnis siehe getAvailableTiers().
      */
     public function getTiers(): array
     {
@@ -68,7 +90,6 @@ class Module extends \humhub\components\Module
                 'stripePriceId' => trim((string) $this->settings->get('stripePriceIntro', '')),
                 'isTop' => false,
                 'free' => false,
-                'validUntil' => $this->getIntroValidUntil(),
             ],
             self::TIER_BASIS => [
                 'label' => Yii::t('JobsModule.base', 'Basis'),
@@ -76,7 +97,6 @@ class Module extends \humhub\components\Module
                 'stripePriceId' => trim((string) $this->settings->get('stripePriceBasis', '')),
                 'isTop' => false,
                 'free' => false,
-                'validUntil' => null,
             ],
             self::TIER_TOP => [
                 'label' => Yii::t('JobsModule.base', 'Top'),
@@ -84,7 +104,6 @@ class Module extends \humhub\components\Module
                 'stripePriceId' => trim((string) $this->settings->get('stripePriceTop', '')),
                 'isTop' => true,
                 'free' => false,
-                'validUntil' => null,
             ],
             self::TIER_LEHRSTELLE => [
                 'label' => Yii::t('JobsModule.base', 'Lehrstelle'),
@@ -92,7 +111,6 @@ class Module extends \humhub\components\Module
                 'stripePriceId' => null,
                 'isTop' => false,
                 'free' => true,
-                'validUntil' => null,
             ],
         ];
     }
@@ -105,24 +123,24 @@ class Module extends \humhub\components\Module
 
     /**
      * Aktuell wählbare Tiers (serverseitige Erlaubnis):
-     * - Intro nur bis zum Stichdatum,
+     * - Lehrstelle immer (gratis),
      * - bezahlte Tiers nur mit hinterlegter Stripe-Price-ID,
-     * - Lehrstelle immer.
+     * - Intro zusätzlich nur, solange das Kontingent (erste N bezahlten Inserate)
+     *   nicht ausgeschöpft ist.
      */
     public function getAvailableTiers(): array
     {
-        $now = time();
         $out = [];
         foreach ($this->getTiers() as $key => $def) {
-            if ($def['free']) {
+            if (!empty($def['free'])) {
                 $out[$key] = $def;
                 continue;
             }
             if (empty($def['stripePriceId'])) {
                 continue; // ohne Price-ID nicht anbietbar
             }
-            if (!empty($def['validUntil']) && strtotime($def['validUntil']) < $now) {
-                continue; // Intro-Stichdatum überschritten
+            if ($key === self::TIER_INTRO && !$this->isIntroAvailable()) {
+                continue; // Intro-Kontingent ausgeschöpft
             }
             $out[$key] = $def;
         }

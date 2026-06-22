@@ -25,7 +25,8 @@ $this->title = Yii::t('JobsModule.base', 'Jobbörse – Konfiguration');
 
         <hr>
         <h4><?= Yii::t('JobsModule.base', 'Einstellungen') ?></h4>
-        <?= $form->field($model, 'introValidUntil')->input('date') ?>
+        <?= $form->field($model, 'introListingLimit')->input('number', ['min' => 0])
+            ->hint(Yii::t('JobsModule.base', 'Solange weniger als so viele bezahlte Inserate veröffentlicht wurden, gilt der vergünstigte Intro-Tarif. Standard: 50.')) ?>
         <?= $form->field($model, 'durationDays')->input('number', ['min' => 1, 'max' => 365]) ?>
         <?= $form->field($model, 'moderationEnabled')->checkbox() ?>
 

@@ -50,7 +50,7 @@ Stripe Checkout (gehostet), automatischer Ablauf, DE-CH + FR.
 5. Stripe-Webhook anlegen: Endpoint `https://DEINE-DOMAIN/jobs/webhook` (bzw.
    `/index.php?r=jobs/webhook`), Event `checkout.session.completed`.
 6. Admin-Konfiguration öffnen (Administration → Jobbörse) und die **Stripe-Price-IDs**
-   für Intro/Basis/Top, das **Intro-Stichdatum** sowie **Moderation an/aus** eintragen.
+   für Intro/Basis/Top, das **Intro-Limit** (Standard 50) sowie **Moderation** eintragen.
 7. HumHub-**Cron** muss serverseitig eingerichtet sein (Daily-Run setzt abgelaufene
    Inserate auf `expired`). Manuell: `php protected/yii jobs/expire`.
 
@@ -58,10 +58,15 @@ Stripe Checkout (gehostet), automatischer Ablauf, DE-CH + FR.
 
 | Tier | Preis | Dauer | Besonderheit |
 |---|---|---|---|
-| Intro | CHF 49 | 30 Tage | nur bis Stichdatum wählbar |
-| Basis | (Admin) | 30 Tage | – |
-| Top | (Admin) | 30 Tage | `is_top=1`, Hervorhebung |
-| Lehrstelle | gratis | 30 Tage | kein Stripe (optional Admin-Freigabe) |
+| Intro | CHF 49 | 30 Tage | nur für die **ersten 50 bezahlten Inserate** (`intro_listing_limit`); danach ausgeblendet |
+| Basis | CHF 99 | 30 Tage | Einstiegspreis nach Ablauf der Intro-Aktion |
+| Top | CHF 199 | 30 Tage | `is_top=1`, Top-Platzierung/Hervorhebung |
+| Lehrstelle | gratis | 30 Tage | kein Stripe (Veröffentlichung nach Admin-Freigabe, da Moderation AN) |
+
+> Preise = die im Stripe-Dashboard hinterlegten **Price-Objekte** (Beträge im Admin nicht
+> dupliziert). Das Intro-Kontingent wird live aus der Tabelle abgeleitet (Anzahl Inserate
+> mit `tier ≠ lehrstelle` und abgeschlossener Zahlung) – kein Datum, keine Extra-Spalte.
+> Premium/Boost (~CHF 299) ist v2.
 
 ## Sicherheit (verbindlich)
 
