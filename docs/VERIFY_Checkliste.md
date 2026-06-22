@@ -9,6 +9,22 @@ und `docs.humhub.org` prüfen. Priorität: **🔴 bricht sonst** · **🟡 wicht
 > Migrationen müssen durchlaufen → Menüpunkte erscheinen → je eine Seite je
 > Controller öffnen. Fehler weisen meist genau auf einen Punkt unten.
 
+## Stand 22.06.2026 — LIVE gegen HumHub 1.16 (Docker) getestet ✅
+Beide Module aktiviert, Migrationen gelaufen, Seiten als Gast gerendert (200):
+`forum/category/index` (8 Kategorien), `forum/category/view`, `jobs/job/index`.
+Dabei gefundene + behobene Bugs:
+- 🔧 **Cron-Klasse**: `humhub\commands\CronController` (nicht `modules\cron\…`) → Modul lud sonst nicht.
+- 🔧 **Icon im Menü**: `humhub\modules\ui\widgets\Icon` existiert nicht → Core-Muster
+  übernommen (MenuLink-Config-Array, `'icon' => 'briefcase'` als String).
+- 🔧 **Migrations-Namenskollision**: HumHub trackt Modul-Migrationen global per `version`
+  (PK) → beide `m000000_000000_init` kollidierten → eindeutig umbenannt.
+- 🔧 **Webhook**: plain `yii\web\Controller` (kein `RULE_GUEST_ACCESS_ONLY`).
+- 🔧 **Docblock-`*/`-Falle** in `JobListing.php` (`stripe_*/published_*` schloss den
+  Kommentar → ParseError, 500 nur auf der jobs-Seite) → entschärft.
+- ℹ️ **Gastzugriff**: via `php yii settings/set user auth.allowGuestAccess 1` + die
+  `['guestAccess'=>[...]]`-Regeln in den öffentlichen Controllern. Wichtig: **Pretty-URLs**
+  nutzen (`/forum/...`), nicht `/index.php?r=...` (Letzteres leitet Gäste auf /dashboard).
+
 ## Stand 21.06.2026 (gegen humhub/develop verifiziert)
 - ✅ **Menü-API bestätigt**: `humhub\widgets\TopMenu::EVENT_INIT`,
   `humhub\modules\ui\menu\MenuLink`, `humhub\modules\ui\widgets\Icon` + Setter

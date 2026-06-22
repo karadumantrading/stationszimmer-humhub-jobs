@@ -109,7 +109,8 @@ class JobListing extends ActiveRecord
 
     /**
      * Im Arbeitgeber-Szenario sind NUR die fachlichen Felder massenzuweisbar –
-     * status/tier/stripe_*/published_* werden ausschliesslich serverseitig gesetzt.
+     * status, tier sowie die stripe_- und published_-Felder werden
+     * ausschliesslich serverseitig gesetzt.
      */
     public function scenarios(): array
     {
