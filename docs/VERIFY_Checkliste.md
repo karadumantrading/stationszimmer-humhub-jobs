@@ -18,6 +18,11 @@ Zusätzlich live verifiziert:
 - **Webhook**: `POST /jobs/webhook` → **503** (Gast erreichbar, CSRF aus, kein Fatal
   ohne Stripe-SDK/Keys – `\Stripe\…` wird erst nach Key-Prüfung referenziert).
 - **Composer fehlt im HumHub-Image** → Stripe-SDK per `composer.phar` (siehe dev/README).
+- **`@<moduleId>`-Alias**: HumHub registriert ihn automatisch (Core nutzt
+  `render('@activity/...')`) → Admin-Views (`@jobs/...`, `@forum/...`) lösen korrekt auf. ✅
+
+Damit sind alle 🔴-Punkte geklärt. Offen bleiben nur eingeloggte End-to-End-Flows
+(Thema/Antwort/Inserat erstellen, Stripe-Checkout) – brauchen Login bzw. Stripe-Keys.
 Dabei gefundene + behobene Bugs:
 - 🔧 **Cron-Klasse**: `humhub\commands\CronController` (nicht `modules\cron\…`) → Modul lud sonst nicht.
 - 🔧 **Icon im Menü**: `humhub\modules\ui\widgets\Icon` existiert nicht → Core-Muster
