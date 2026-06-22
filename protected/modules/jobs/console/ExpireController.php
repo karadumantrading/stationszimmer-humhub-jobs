@@ -12,7 +12,7 @@ use humhub\modules\jobs\models\JobListing;
  */
 class ExpireController extends Controller
 {
-    public function actionIndex(): int
+    public function actionExpire(): int
     {
         $count = JobListing::updateAll(
             ['status' => JobListing::STATUS_EXPIRED, 'updated_at' => date('Y-m-d H:i:s')],

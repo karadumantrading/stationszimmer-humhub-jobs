@@ -12,6 +12,12 @@ und `docs.humhub.org` prüfen. Priorität: **🔴 bricht sonst** · **🟡 wicht
 ## Stand 22.06.2026 — LIVE gegen HumHub 1.16 (Docker) getestet ✅
 Beide Module aktiviert, Migrationen gelaufen, Seiten als Gast gerendert (200):
 `forum/category/index` (8 Kategorien), `forum/category/view`, `jobs/job/index`.
+Zusätzlich live verifiziert:
+- **Cron**: `cron/daily` löst `onDailyCron` ohne Fehler aus; Console-Fallback
+  `php yii jobs/expire` läuft (Action umbenannt `index`→`expire`, matcht Doku).
+- **Webhook**: `POST /jobs/webhook` → **503** (Gast erreichbar, CSRF aus, kein Fatal
+  ohne Stripe-SDK/Keys – `\Stripe\…` wird erst nach Key-Prüfung referenziert).
+- **Composer fehlt im HumHub-Image** → Stripe-SDK per `composer.phar` (siehe dev/README).
 Dabei gefundene + behobene Bugs:
 - 🔧 **Cron-Klasse**: `humhub\commands\CronController` (nicht `modules\cron\…`) → Modul lud sonst nicht.
 - 🔧 **Icon im Menü**: `humhub\modules\ui\widgets\Icon` existiert nicht → Core-Muster

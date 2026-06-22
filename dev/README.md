@@ -30,12 +30,17 @@ Beide Module sind in den Container gemountet (`protected/modules/jobs` und
 ## 3. Stripe-SDK + Secrets
 
 ```powershell
-# SDK im HumHub-Root installieren
-docker compose exec humhub composer require stripe/stripe-php
+# Hinweis: Das mriedmann/humhub-Image bringt KEIN composer mit. Erst composer holen,
+# dann das Stripe-SDK installieren (im Container ephemer -> nach `down`/Recreate erneut):
+docker compose exec humhub sh -c "cd /var/www/localhost/htdocs && curl -sS https://getcomposer.org/installer | php && php composer.phar require stripe/stripe-php"
 
 # Stripe-Params hinterlegen (Secrets via dev/.env -> Container-Env -> params)
 # Inhalt von dev/local.php.sample in protected/config/local.php einfügen.
 ```
+
+> Ohne SDK/Keys bleibt das Modul lauffähig: Checkout/Webhook prüfen zuerst die
+> Konfiguration und antworten sonst mit Fehlermeldung bzw. HTTP 503 – **kein Fatal**.
+> Für echte Zahlungstests brauchst du ein Stripe-Konto + Keys (siehe Haupt-README).
 
 Webhook (z. B. via Stripe CLI in den Container forwarden):
 `stripe listen --forward-to http://localhost:8080/index.php?r=jobs/webhook`
