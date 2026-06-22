@@ -25,6 +25,7 @@ class JobController extends Controller
     protected function getAccessRules(): array
     {
         return [
+            ['guestAccess' => ['index', 'view']],
             [ControllerAccess::RULE_LOGGED_IN_ONLY => ['create', 'edit', 'my']],
         ];
     }

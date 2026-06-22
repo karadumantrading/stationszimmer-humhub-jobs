@@ -7,7 +7,7 @@ use humhub\components\Migration;
  *
  * @verify: humhub\components\Migration + Tabellenname `user` gegen Installation.
  */
-class m000000_000000_init extends Migration
+class m250622_120000_forum_init extends Migration
 {
     public function safeUp()
     {

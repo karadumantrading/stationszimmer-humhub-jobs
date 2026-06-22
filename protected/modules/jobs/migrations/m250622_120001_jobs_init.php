@@ -7,7 +7,7 @@ use humhub\components\Migration;
  *
  * @verify: humhub\components\Migration gegen installierte Version.
  */
-class m000000_000000_init extends Migration
+class m250622_120001_jobs_init extends Migration
 {
     public function safeUp()
     {

@@ -22,11 +22,14 @@ class ThreadController extends Controller
 
     protected function getAccessRules(): array
     {
-        return [[
-            ControllerAccess::RULE_LOGGED_IN_ONLY => [
-                'create', 'reply', 'edit-post', 'delete-post', 'delete', 'pin', 'lock',
+        return [
+            ['guestAccess' => ['view']],
+            [
+                ControllerAccess::RULE_LOGGED_IN_ONLY => [
+                    'create', 'reply', 'edit-post', 'delete-post', 'delete', 'pin', 'lock',
+                ],
             ],
-        ]];
+        ];
     }
 
     /** Thema mit Beiträgen (öffentlich) + Antwortfeld (eingeloggt, wenn offen). */

@@ -3,9 +3,10 @@
 use humhub\modules\jobs\Events;
 use humhub\modules\jobs\Module;
 
-// @verify: Event-Klassen/Konstanten gegen die installierte HumHub-Version prüfen.
-// - TopMenu:   humhub\widgets\TopMenu::EVENT_INIT
-// - DailyCron: humhub\modules\cron\CronController::EVENT_ON_DAILY_RUN
+// Verifiziert gegen HumHub-Source im Container:
+// - TopMenu:   humhub\widgets\TopMenu::EVENT_INIT  ✓
+// - DailyCron: humhub\commands\CronController::EVENT_ON_DAILY_RUN ("daily")  ✓
+//   (liegt in protected/humhub/commands/, NICHT unter modules/cron/)
 return [
     'id' => 'jobs',
     'class' => Module::class,
@@ -17,8 +18,8 @@ return [
             'callback' => [Events::class, 'onTopMenuInit'],
         ],
         [
-            'class' => \humhub\modules\cron\CronController::class,
-            'event' => \humhub\modules\cron\CronController::EVENT_ON_DAILY_RUN,
+            'class' => \humhub\commands\CronController::class,
+            'event' => \humhub\commands\CronController::EVENT_ON_DAILY_RUN,
             'callback' => [Events::class, 'onDailyCron'],
         ],
     ],

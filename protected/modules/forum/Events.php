@@ -3,26 +3,24 @@
 namespace humhub\modules\forum;
 
 use Yii;
+use humhub\modules\ui\menu\MenuLink;
 
 /**
  * Event-Handler: «Forum» ins Top-Menü hängen.
  *
- * @verify: Menü-/Icon-Klassen gegen installierte HumHub-Version.
+ * Menü-Muster 1:1 wie HumHub-Core: MenuLink mit Config-Array, Icon als String.
  */
 class Events
 {
     public static function onTopMenuInit($event): void
     {
-        $entry = new \humhub\modules\ui\menu\MenuLink();
-        $entry->setId('forum');
-        $entry->setLabel(Yii::t('ForumModule.base', 'Forum'));
-        $entry->setUrl(['/forum/category/index']);
-        $entry->setIcon(new \humhub\modules\ui\widgets\Icon(['name' => 'comments']));
-        $entry->setSortOrder(290);
-        $entry->setIsActive(
-            Yii::$app->controller->module
-            && Yii::$app->controller->module->id === 'forum'
-        );
-        $event->sender->addEntry($entry);
+        $event->sender->addEntry(new MenuLink([
+            'id' => 'forum',
+            'label' => Yii::t('ForumModule.base', 'Forum'),
+            'url' => ['/forum/category/index'],
+            'icon' => 'comments',
+            'sortOrder' => 290,
+            'isActive' => MenuLink::isActiveState('forum'),
+        ]));
     }
 }

@@ -3,30 +3,28 @@
 namespace humhub\modules\jobs;
 
 use Yii;
+use humhub\modules\ui\menu\MenuLink;
 use humhub\modules\jobs\models\JobListing;
 
 /**
- * Event-Handler des Moduls: Top-Menü-Eintrag und täglicher Ablauf-Cron.
+ * Event-Handler: Top-Menü-Eintrag und täglicher Ablauf-Cron.
  *
- * @verify: Menü-/Icon-Klassen gegen installierte HumHub-Version
- * (humhub\modules\ui\menu\MenuLink, humhub\modules\ui\widgets\Icon).
+ * Menü-Muster 1:1 wie HumHub-Core (modules/dashboard/Events.php): MenuLink mit
+ * Config-Array, Icon als String (kein Icon-Widget), isActiveState().
  */
 class Events
 {
     /** «Jobbörse» ins Top-Menü hängen. */
     public static function onTopMenuInit($event): void
     {
-        $entry = new \humhub\modules\ui\menu\MenuLink();
-        $entry->setId('jobs');
-        $entry->setLabel(Yii::t('JobsModule.base', 'Jobbörse'));
-        $entry->setUrl(['/jobs/job/index']);
-        $entry->setIcon(new \humhub\modules\ui\widgets\Icon(['name' => 'briefcase']));
-        $entry->setSortOrder(300);
-        $entry->setIsActive(
-            Yii::$app->controller->module
-            && Yii::$app->controller->module->id === 'jobs'
-        );
-        $event->sender->addEntry($entry);
+        $event->sender->addEntry(new MenuLink([
+            'id' => 'jobs',
+            'label' => Yii::t('JobsModule.base', 'Jobbörse'),
+            'url' => ['/jobs/job/index'],
+            'icon' => 'briefcase',
+            'sortOrder' => 300,
+            'isActive' => MenuLink::isActiveState('jobs'),
+        ]));
     }
 
     /** Täglich: veröffentlichte Inserate nach Ablauf auf 'expired' setzen. */

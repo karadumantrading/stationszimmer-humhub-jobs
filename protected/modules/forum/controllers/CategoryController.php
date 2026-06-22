@@ -6,17 +6,27 @@ use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 use humhub\components\Controller;
+use humhub\components\access\ControllerAccess;
 use humhub\modules\forum\models\ForumCategory;
 use humhub\modules\forum\models\ForumThread;
 
 /**
  * Bereichsübersicht und Themenliste je Bereich (öffentlich lesbar).
  *
- * @verify: Controller/Access gegen installierte HumHub-Version; Guest-Sicht
- * hängt zusätzlich an der HumHub-Einstellung «Zugriff für Gäste».
+ * Gast-Lesezugriff via 'guestAccess'-Regel (greift, wenn global «Gastzugriff»
+ * aktiviert ist – Administration → Einstellungen → Allgemein).
  */
 class CategoryController extends Controller
 {
+    public $access = ControllerAccess::class;
+
+    protected function getAccessRules(): array
+    {
+        return [
+            ['guestAccess' => ['index', 'view']],
+        ];
+    }
+
     /** Alle Bereiche. */
     public function actionIndex()
     {
