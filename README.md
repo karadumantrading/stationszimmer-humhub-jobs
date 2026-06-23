@@ -68,6 +68,20 @@ Stripe Checkout (gehostet), automatischer Ablauf, DE-CH + FR.
 > mit `tier ≠ lehrstelle` und abgeschlossener Zahlung) – kein Datum, keine Extra-Spalte.
 > Premium/Boost (~CHF 299) ist v2.
 
+## Mehrsprachigkeit (DE / FR)
+
+Alle UI-Strings laufen über `Yii::t('JobsModule.base'/'ForumModule.base', '…')` mit
+**deutschem Quelltext** (DE funktioniert ohne Übersetzungsdatei). Für **FR** liegt ein
+Gerüst mit leeren Werten unter `messages/fr/<Modul>Module.base.php` – solange leer,
+zeigt die UI Deutsch. HumHub registriert die Modul-Nachrichtenquelle automatisch
+(Kategorie-Präfix `JobsModule.`/`ForumModule.` → `messages/`), live verifiziert.
+
+FR-Gerüst neu erzeugen (nach String-Änderungen), z. B.:
+```bash
+node dev/extract-i18n.mjs protected/modules/jobs "JobsModule.base" \
+  protected/modules/jobs/messages/fr/JobsModule.base.php
+```
+
 ## Sicherheit (verbindlich)
 
 - Stripe Secret/Webhook-Secret nur aus `params`/Env, nie in DB/Code/Logs.
