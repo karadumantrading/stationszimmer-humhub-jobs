@@ -64,9 +64,11 @@ class Module extends \humhub\components\Module
      */
     public function getPaidListingCount(): int
     {
+        // "Bezahlt" = abgeschlossene Stripe-Zahlung (Webhook setzt
+        // stripe_payment_intent_id). Die Tabelle hat keine paid_at-Spalte.
         return (int) JobListing::find()
             ->andWhere(['not', ['tier' => self::TIER_LEHRSTELLE]])
-            ->andWhere(['not', ['paid_at' => null]])
+            ->andWhere(['not', ['stripe_payment_intent_id' => null]])
             ->count();
     }
 

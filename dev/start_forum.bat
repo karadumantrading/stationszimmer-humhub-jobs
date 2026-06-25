@@ -5,7 +5,7 @@ REM  Liegt in dev\ neben docker-compose.yml. Doppelklick genuegt.
 REM ============================================================
 cd /d "%~dp0"
 
-set "URL=http://localhost:8080/index.php?r=forum/category/index"
+set "URL=http://localhost:8080/forum/category/index"
 
 echo.
 echo  Stationszimmer-Forum wird gestartet ...
