@@ -1,7 +1,15 @@
-// Stationszimmer – Build
-// 1. HumHub Parent-Theme
-@import "../../HumHub/scss/root";
-@import "../../HumHub/scss/mixins";
+// Stationszimmer – Vollständiger Build
+// Mit --load-path werden alle Pfade relativ zu diesen Roots aufgelöst
 
-// 2. Unsere Stationszimmer-Styles
+// 1. Unsere Variablen VOR Bootstrap
+@import "variables";
+
+// 2. Bootstrap komplett (via load-path)
+@import "bootstrap";
+
+// 3. HumHub-spezifische Basis (via load-path)
+@import "HumHub/scss/root";
+@import "HumHub/scss/mixins";
+
+// 4. Stationszimmer-spezifische Styles
 @import "theme";
