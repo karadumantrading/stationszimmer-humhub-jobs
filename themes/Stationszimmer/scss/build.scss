@@ -1,0 +1,7 @@
+// Stationszimmer – Build
+// 1. HumHub Parent-Theme
+@import "../../HumHub/scss/root";
+@import "../../HumHub/scss/mixins";
+
+// 2. Unsere Stationszimmer-Styles
+@import "theme";

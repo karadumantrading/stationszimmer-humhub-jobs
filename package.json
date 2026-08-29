@@ -1,0 +1,10 @@
+{
+  "name": "stationszimmer-theme",
+  "version": "1.0.0",
+  "scripts": {
+    "build-theme": "sass themes/Stationszimmer/scss/build.scss themes/Stationszimmer/resources/css/theme.css --style=compressed --no-source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.103.1"
+  }
+}

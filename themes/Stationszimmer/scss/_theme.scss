@@ -1,0 +1,144 @@
+// Stationszimmer – Fieberkurve Theme
+// Setzt Navbar-Farben und alle Stationszimmer-spezifischen Styles
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --sz-primary:       #120a8f;
+  --sz-primary-d:     #0d0769;
+  --sz-primary-l:     #e8e6ff;
+  --sz-gold:          #b45309;
+  --sz-gold-l:        #fef3c7;
+  --sz-text:          #1a1a2e;
+  --sz-muted:         #64748b;
+  --sz-border:        #e2e8f0;
+  --sz-bg:            #f8fafc;
+  --sz-card:          #ffffff;
+  --sz-radius-card:   5px 20px 5px 20px;
+  --sz-radius-btn:    4px 12px 4px 12px;
+}
+
+// ─── Typografie ───
+body {
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--sz-bg);
+  color: var(--sz-text);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+a { color: var(--sz-primary); }
+a:hover { color: var(--sz-primary-d); }
+
+// ─── Navbar (HumHub 1.18: #topbar-first / #topbar-second) ───
+#topbar-first {
+  background-color: var(--sz-primary) !important;
+  border-bottom: 3px solid var(--sz-gold) !important;
+  box-shadow: 0 2px 8px rgba(18, 10, 143, 0.2);
+  overflow: hidden !important;  // Verhindert Dropdown-Bleed
+  max-height: 60px !important;  // Begrenzt Höhe
+}
+
+// Dropdown-Menüs aus dem overflow-hidden-Kontext herausnehmen
+#topbar-first .dropdown {
+  overflow: visible !important;
+}
+
+#topbar-second {
+  background-color: var(--sz-primary-d) !important;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden !important;
+  max-height: 50px !important;
+}
+
+#topbar-second .dropdown {
+  overflow: visible !important;
+}
+
+.navbar-brand, #text-logo {
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.topbar .nav-link {
+  color: rgba(255,255,255,0.88) !important;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: color 0.15s;
+}
+
+.topbar .nav-link:hover,
+.topbar .nav-link:focus {
+  color: #fff !important;
+}
+
+// Goldene Trennlinie
+#topbar-first::after {
+  content: '';
+  display: block;
+  height: 0; // Deaktiviert, da border-bottom schon gesetzt
+}
+
+// ─── Buttons ───
+.btn-primary {
+  background-color: var(--sz-primary);
+  border-color: var(--sz-primary);
+  border-radius: var(--sz-radius-btn);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--sz-primary-d);
+  border-color: var(--sz-primary-d);
+}
+
+.btn {
+  border-radius: var(--sz-radius-btn);
+  font-weight: 500;
+}
+
+// ─── Cards / Panels ───
+.panel, .card {
+  border-radius: var(--sz-radius-card);
+  border-color: var(--sz-border);
+  overflow: hidden;
+}
+
+.panel-heading, .card-header {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+// ─── Stream / Posts ───
+.stream-entry-wrapper, .wall-entry {
+  border-radius: var(--sz-radius-card) !important;
+  border-color: var(--sz-border) !important;
+  transition: box-shadow 0.15s;
+}
+
+.stream-entry-wrapper:hover, .wall-entry:hover {
+  box-shadow: 0 3px 10px rgba(18,10,143,0.08) !important;
+}
+
+// ─── Inputs ───
+.form-control:focus {
+  border-color: var(--sz-primary);
+  box-shadow: 0 0 0 3px rgba(18,10,143,0.1);
+}
+
+// ─── Pagination ───
+.page-link { color: var(--sz-primary); }
+.page-item.active .page-link {
+  background-color: var(--sz-primary);
+  border-color: var(--sz-primary);
+}
+
+// ─── Mobile ───
+@media (max-width: 768px) {
+  #topbar-first { max-height: 80px !important; }
+}

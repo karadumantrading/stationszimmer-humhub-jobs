@@ -1,0 +1,38 @@
+// Stationszimmer – Fieberkurve Variablen
+// Lacivert als Primary, Gold als Accent
+
+$primary:       #120a8f;
+$secondary:     #64748b;
+$success:       #16a34a;
+$info:          #0ea5e9;
+$warning:       #b45309;
+$danger:        #dc2626;
+
+$link-color:    $primary;
+
+// Navbar
+$navbar-dark-bg:                 $primary;
+$navbar-dark-color:              rgba(255,255,255,.88);
+$navbar-dark-hover-color:        #fff;
+$navbar-dark-active-color:       #fff;
+$navbar-dark-brand-color:        #fff;
+$navbar-dark-brand-hover-color:  #fff;
+
+// Typografie
+$font-family-sans-serif: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+$font-size-base:         0.9375rem;
+$line-height-base:       1.6;
+$headings-font-weight:   600;
+
+// Border-Radius
+$border-radius:     4px;
+$border-radius-lg:  8px;
+$border-radius-sm:  2px;
+
+// Cards
+$card-border-color: #e2e8f0;
+$card-cap-bg:       #fff;
+
+// Body
+$body-bg:    #f8fafc;
+$body-color: #1a1a2e;
