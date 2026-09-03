@@ -47,6 +47,7 @@ class JobListing extends ActiveRecord
     public const STATUS_EXPIRED = 'expired';
     public const STATUS_ARCHIVED = 'archived';
     public const STATUS_REJECTED = 'rejected';
+    public const STATUS_PAUSED = 'paused';   // Automatisch pausiert (kein Reminder-Klick)
 
     public const STATUSES = [
         self::STATUS_DRAFT,
@@ -56,6 +57,7 @@ class JobListing extends ActiveRecord
         self::STATUS_EXPIRED,
         self::STATUS_ARCHIVED,
         self::STATUS_REJECTED,
+        self::STATUS_PAUSED,
     ];
 
     /** Whitelists (gegen die Stationszimmer-Settings abgleichen). */
@@ -170,19 +172,23 @@ class JobListing extends ActiveRecord
     }
 
     /**
-     * Inserat veröffentlichen: Laufzeit serverseitig aus dem Tier, published_at/until
-     * setzen. Wird vom Webhook (nach Zahlung) bzw. Admin (nach Freigabe) aufgerufen.
+     * Inserat veröffentlichen.
+     * - Einzelinserat & Lehrstelle: published_until = null («unbegrenzt»)
+     * - Flat 3M/12M: published_until = jetzt + durationDays
      */
     public function publish(): void
     {
-        $days = $this->tierDurationDays();
+        $def = $this->tier ? self::module()->getTier($this->tier) : null;
+        $days = $def['durationDays'] ?? null;
         $now = date('Y-m-d H:i:s');
+
         $this->updateAttributes([
-            'status' => self::STATUS_PUBLISHED,
-            'is_top' => !empty(self::module()->getTier((string) $this->tier)['isTop']) ? 1 : 0,
-            'published_at' => $now,
-            'published_until' => date('Y-m-d H:i:s', strtotime("+{$days} days")),
-            'updated_at' => $now,
+            'status'            => self::STATUS_PUBLISHED,
+            'published_at'      => $now,
+            'published_until'   => $days !== null ? date('Y-m-d H:i:s', strtotime("+{$days} days")) : null,
+            'confirmation_sent_at' => null, // zurücksetzen bei Reaktivierung
+            'paused_at'         => null,
+            'updated_at'        => $now,
         ]);
     }
 

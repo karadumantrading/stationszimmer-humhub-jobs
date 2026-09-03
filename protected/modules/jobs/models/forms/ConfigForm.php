@@ -14,47 +14,39 @@ use humhub\modules\jobs\Module;
  */
 class ConfigForm extends Model
 {
-    public $stripePriceIntro;
-    public $stripePriceBasis;
-    public $stripePriceTop;
-    public $introListingLimit;
+    public $stripePriceSingle;   // CHF 300 Einzelinserat
+    public $stripePriceFlat3m;   // CHF 1200 Flat 3 Monate
+    public $stripePriceFlat12m;  // CHF 3000 Flat 12 Monate
     public $moderationEnabled;
-    public $durationDays;
 
     public function rules(): array
     {
         return [
-            [['stripePriceIntro', 'stripePriceBasis', 'stripePriceTop'], 'string', 'max' => 255],
-            [['stripePriceIntro', 'stripePriceBasis', 'stripePriceTop'], 'match',
+            [['stripePriceSingle', 'stripePriceFlat3m', 'stripePriceFlat12m'], 'string', 'max' => 255],
+            [['stripePriceSingle', 'stripePriceFlat3m', 'stripePriceFlat12m'], 'match',
                 'pattern' => '/^price_[A-Za-z0-9]+$/', 'skipOnEmpty' => true,
                 'message' => Yii::t('JobsModule.base', 'Bitte eine gültige Stripe-Price-ID (price_…) eingeben.')],
-            [['introListingLimit'], 'integer', 'min' => 0, 'max' => 100000],
             [['moderationEnabled'], 'boolean'],
-            [['durationDays'], 'integer', 'min' => 1, 'max' => 365],
         ];
     }
 
     public function attributeLabels(): array
     {
         return [
-            'stripePriceIntro' => Yii::t('JobsModule.base', 'Stripe-Price-ID «Intro» (CHF 49)'),
-            'stripePriceBasis' => Yii::t('JobsModule.base', 'Stripe-Price-ID «Basis» (CHF 99)'),
-            'stripePriceTop' => Yii::t('JobsModule.base', 'Stripe-Price-ID «Top» (CHF 199)'),
-            'introListingLimit' => Yii::t('JobsModule.base', 'Intro-Limit (Anzahl bezahlter Inserate)'),
-            'moderationEnabled' => Yii::t('JobsModule.base', 'Inserate vor Veröffentlichung prüfen'),
-            'durationDays' => Yii::t('JobsModule.base', 'Laufzeit pro Inserat (Tage)'),
+            'stripePriceSingle'  => Yii::t('JobsModule.base', 'Stripe-Price-ID Einzelinserat (CHF 300)'),
+            'stripePriceFlat3m'  => Yii::t('JobsModule.base', 'Stripe-Price-ID Flat 3 Monate (CHF 1’200)'),
+            'stripePriceFlat12m' => Yii::t('JobsModule.base', 'Stripe-Price-ID Flat 12 Monate (CHF 3’000)'),
+            'moderationEnabled'  => Yii::t('JobsModule.base', 'Inserate vor Veröffentlichung prüfen'),
         ];
     }
 
     public function loadSettings(Module $module): void
     {
         $s = $module->settings;
-        $this->stripePriceIntro = $s->get('stripePriceIntro', '');
-        $this->stripePriceBasis = $s->get('stripePriceBasis', '');
-        $this->stripePriceTop = $s->get('stripePriceTop', '');
-        $this->introListingLimit = $module->getIntroListingLimit();
-        $this->moderationEnabled = $module->isModerationEnabled();
-        $this->durationDays = $module->getDurationDays();
+        $this->stripePriceSingle  = $s->get('stripePriceSingle', '');
+        $this->stripePriceFlat3m  = $s->get('stripePriceFlat3m', '');
+        $this->stripePriceFlat12m = $s->get('stripePriceFlat12m', '');
+        $this->moderationEnabled  = $module->isModerationEnabled();
     }
 
     public function saveSettings(Module $module): bool
@@ -63,12 +55,10 @@ class ConfigForm extends Model
             return false;
         }
         $s = $module->settings;
-        $s->set('stripePriceIntro', trim((string) $this->stripePriceIntro));
-        $s->set('stripePriceBasis', trim((string) $this->stripePriceBasis));
-        $s->set('stripePriceTop', trim((string) $this->stripePriceTop));
-        $s->set('introListingLimit', (int) $this->introListingLimit);
-        $s->set('moderationEnabled', $this->moderationEnabled ? '1' : '0');
-        $s->set('durationDays', (int) $this->durationDays);
+        $s->set('stripePriceSingle',  trim((string) $this->stripePriceSingle));
+        $s->set('stripePriceFlat3m',  trim((string) $this->stripePriceFlat3m));
+        $s->set('stripePriceFlat12m', trim((string) $this->stripePriceFlat12m));
+        $s->set('moderationEnabled',  $this->moderationEnabled ? '1' : '0');
         return true;
     }
 }

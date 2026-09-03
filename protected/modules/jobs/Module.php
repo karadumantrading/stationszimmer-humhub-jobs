@@ -18,20 +18,20 @@ use humhub\modules\jobs\models\JobListing;
 class Module extends \humhub\components\Module
 {
     /** Tier-Schlüssel (Whitelist). */
-    public const TIER_INTRO = 'intro';
-    public const TIER_BASIS = 'basis';
-    public const TIER_TOP = 'top';
-    public const TIER_LEHRSTELLE = 'lehrstelle';
+    public const TIER_SINGLE      = 'single';       // CHF 300, unbegrenzt, 1 Inserat
+    public const TIER_FLAT_3M     = 'flat_3m';      // CHF 1200, 3 Monate, unbegrenzt viele
+    public const TIER_FLAT_12M    = 'flat_12m';     // CHF 3000, 12 Monate, unbegrenzt viele
+    public const TIER_LEHRSTELLE  = 'lehrstelle';   // gratis
 
     public const TIERS = [
-        self::TIER_INTRO,
-        self::TIER_BASIS,
-        self::TIER_TOP,
+        self::TIER_SINGLE,
+        self::TIER_FLAT_3M,
+        self::TIER_FLAT_12M,
         self::TIER_LEHRSTELLE,
     ];
 
-    /** Standard-Limit für die Intro-Aktion (Anzahl bezahlter Inserate). */
-    public const DEFAULT_INTRO_LIMIT = 50;
+    /** Ab wie vielen bezahlten Einzelinseraten werden Flat-Abos freigeschaltet? */
+    public const FLAT_UNLOCK_THRESHOLD = 5;
 
     /** Konfigurationsseite im Admin. */
     public function getConfigUrl()
@@ -39,80 +39,65 @@ class Module extends \humhub\components\Module
         return Url::to(['/jobs/admin/config']);
     }
 
-    /** Standard-Laufzeit eines Inserats in Tagen (global konfigurierbar). */
-    public function getDurationDays(): int
-    {
-        return (int) ($this->settings->get('durationDays', 30)) ?: 30;
-    }
-
-    /** Ist Moderation (Freigabe vor Veröffentlichung) aktiv? (Gründungsphase: AN) */
+    /** Ist Moderation (Freigabe vor Veröffentlichung) aktiv? */
     public function isModerationEnabled(): bool
     {
         return (bool) $this->settings->get('moderationEnabled', true);
     }
 
-    /** Bis zu wie vielen bezahlten Inseraten gilt der Intro-Tarif? */
-    public function getIntroListingLimit(): int
-    {
-        $v = $this->settings->get('introListingLimit', self::DEFAULT_INTRO_LIMIT);
-        return ($v === null || $v === '') ? self::DEFAULT_INTRO_LIMIT : (int) $v;
-    }
-
     /**
-     * Anzahl bereits bezahlter Inserate (Tier ≠ Lehrstelle, Zahlung abgeschlossen).
-     * Wird direkt aus der Tabelle abgeleitet – kein Datum, keine Extra-Spalte.
+     * Anzahl bezahlter Einzelinserate (tier=single, Zahlung abgeschlossen) des Users.
+     * Basis für Flat-Freischaltung.
      */
-    public function getPaidListingCount(): int
+    public function getPaidSingleCount(int $userId): int
     {
-        // "Bezahlt" = abgeschlossene Stripe-Zahlung (Webhook setzt
-        // stripe_payment_intent_id). Die Tabelle hat keine paid_at-Spalte.
         return (int) JobListing::find()
-            ->andWhere(['not', ['tier' => self::TIER_LEHRSTELLE]])
+            ->andWhere(['created_by' => $userId])
+            ->andWhere(['tier' => self::TIER_SINGLE])
             ->andWhere(['not', ['stripe_payment_intent_id' => null]])
             ->count();
     }
 
-    /** Ist die Intro-Aktion noch verfügbar (Kontingent nicht ausgeschöpft)? */
-    public function isIntroAvailable(): bool
+    /** Hat dieser User das Flat-Abo freigeschaltet? */
+    public function isFlatUnlocked(int $userId): bool
     {
-        return $this->getPaidListingCount() < $this->getIntroListingLimit();
+        return $this->getPaidSingleCount($userId) >= self::FLAT_UNLOCK_THRESHOLD;
     }
 
     /**
-     * Vollständige Tier-Definitionen (label, durationDays, stripePriceId, isTop,
-     * free). Reine Konfiguration – Verfügbarkeit/Erlaubnis siehe getAvailableTiers().
+     * Vollständige Tier-Definitionen.
+     * durationDays = null bedeutet «unbegrenzt / läuft bis Deaktivierung».
      */
     public function getTiers(): array
     {
-        $days = $this->getDurationDays();
         return [
-            self::TIER_INTRO => [
-                'label' => Yii::t('JobsModule.base', 'Intro'),
-                'durationDays' => $days,
-                'stripePriceId' => trim((string) $this->settings->get('stripePriceIntro', '')),
-                'isTop' => false,
-                'free' => false,
+            self::TIER_SINGLE => [
+                'label'          => Yii::t('JobsModule.base', 'Einzelinserat (CHF 300)'),
+                'durationDays'   => null,   // unbegrenzt
+                'stripePriceId'  => trim((string) $this->settings->get('stripePriceSingle', '')),
+                'flat'           => false,
+                'free'           => false,
             ],
-            self::TIER_BASIS => [
-                'label' => Yii::t('JobsModule.base', 'Basis'),
-                'durationDays' => $days,
-                'stripePriceId' => trim((string) $this->settings->get('stripePriceBasis', '')),
-                'isTop' => false,
-                'free' => false,
+            self::TIER_FLAT_3M => [
+                'label'          => Yii::t('JobsModule.base', 'Flat 3 Monate (CHF 1’200)'),
+                'durationDays'   => 90,
+                'stripePriceId'  => trim((string) $this->settings->get('stripePriceFlat3m', '')),
+                'flat'           => true,
+                'free'           => false,
             ],
-            self::TIER_TOP => [
-                'label' => Yii::t('JobsModule.base', 'Top'),
-                'durationDays' => $days,
-                'stripePriceId' => trim((string) $this->settings->get('stripePriceTop', '')),
-                'isTop' => true,
-                'free' => false,
+            self::TIER_FLAT_12M => [
+                'label'          => Yii::t('JobsModule.base', 'Flat 12 Monate (CHF 3’000)'),
+                'durationDays'   => 365,
+                'stripePriceId'  => trim((string) $this->settings->get('stripePriceFlat12m', '')),
+                'flat'           => true,
+                'free'           => false,
             ],
             self::TIER_LEHRSTELLE => [
-                'label' => Yii::t('JobsModule.base', 'Lehrstelle'),
-                'durationDays' => $days,
-                'stripePriceId' => null,
-                'isTop' => false,
-                'free' => true,
+                'label'          => Yii::t('JobsModule.base', 'Lehrstelle (gratis)'),
+                'durationDays'   => null,
+                'stripePriceId'  => null,
+                'flat'           => false,
+                'free'           => true,
             ],
         ];
     }
@@ -124,14 +109,15 @@ class Module extends \humhub\components\Module
     }
 
     /**
-     * Aktuell wählbare Tiers (serverseitige Erlaubnis):
-     * - Lehrstelle immer (gratis),
-     * - bezahlte Tiers nur mit hinterlegter Stripe-Price-ID,
-     * - Intro zusätzlich nur, solange das Kontingent (erste N bezahlten Inserate)
-     *   nicht ausgeschöpft ist.
+     * Aktuell wählbare Tiers für diesen User:
+     * - Lehrstelle immer (gratis)
+     * - Einzelinserat immer (mit Price-ID)
+     * - Flat-Abos nur wenn FLAT_UNLOCK_THRESHOLD bezahlte Einzelinserate erreicht
      */
-    public function getAvailableTiers(): array
+    public function getAvailableTiers(?int $userId = null): array
     {
+        $userId = $userId ?? (int) Yii::$app->user->id;
+        $flatUnlocked = $this->isFlatUnlocked($userId);
         $out = [];
         foreach ($this->getTiers() as $key => $def) {
             if (!empty($def['free'])) {
@@ -139,19 +125,19 @@ class Module extends \humhub\components\Module
                 continue;
             }
             if (empty($def['stripePriceId'])) {
-                continue; // ohne Price-ID nicht anbietbar
+                continue;
             }
-            if ($key === self::TIER_INTRO && !$this->isIntroAvailable()) {
-                continue; // Intro-Kontingent ausgeschöpft
+            if (!empty($def['flat']) && !$flatUnlocked) {
+                continue; // Flat noch nicht freigeschaltet
             }
             $out[$key] = $def;
         }
         return $out;
     }
 
-    /** Ist dieser Tier jetzt wählbar? (serverseitige Validierung im Checkout) */
-    public function isTierAvailable(string $tier): bool
+    /** Ist dieser Tier für diesen User verfügbar? */
+    public function isTierAvailable(string $tier, ?int $userId = null): bool
     {
-        return array_key_exists($tier, $this->getAvailableTiers());
+        return array_key_exists($tier, $this->getAvailableTiers($userId));
     }
 }
